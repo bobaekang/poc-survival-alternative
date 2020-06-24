@@ -47,7 +47,7 @@ fetch_data <- function(url) {
 }
 
 # Return Kaplan-Meier estimates and p-value from log-rank test
-get_survival_data <- function(df) {
+get_survival_data <- function(df, factor) {
   # ...
   list(survival = survival, pval = pval)
 }
@@ -55,9 +55,9 @@ get_survival_data <- function(df) {
 #' Get survival analysis results
 #' @get /
 #' @serializer unboxedJSON
-function(res) {
+function(factor = "") {
   df <- fetch_data(data_url)
-  get_survival_data(df)
+  get_survival_data(df, factor)
 }
 ```
 
