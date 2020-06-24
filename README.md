@@ -71,6 +71,14 @@ function(factor = "") {
 
 ## Using Python
 
+### Project setup
+
+1. Download and install Python(>=3.6) and pip
+2. `cd` to `/py`
+3. Run `pip install -r requirements.txt` to install dependencies
+4. Run `flask run`
+5. Service is now running on port 5000
+
 ### Dependendcies:
 
 - `flask` for creating simple API server application
