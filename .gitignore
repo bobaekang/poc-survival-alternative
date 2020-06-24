@@ -1,0 +1,8 @@
+.vscode/
+
+# Python
+venv/
+__pycache__/
+
+# R
+.lintr
