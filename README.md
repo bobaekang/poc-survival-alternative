@@ -89,7 +89,7 @@ function(factor = "") {
 
 ```python
 # app.py
-from flask import Flask, jsonify, abort
+from flask import Flask, jsonify, abort, request
 from lifelines import KaplanMeierFitter
 from lifelines.statistics import multivariate_logrank_test
 import pandas as pd
@@ -114,5 +114,6 @@ def get_survival_data(df):
 @app.route('/')
 def get_survival():
     df = fetch_data(DATA_URL)
-    return jsonify(get_survival_data(df))
+    factor = request.args.get('factor')
+    return jsonify(get_survival_data(data, factor))
 ```
