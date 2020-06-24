@@ -40,10 +40,8 @@ get_survival_data <- function(data, factor) {
     pval <- stats::pchisq(sdiff$chisq, length(sdiff$n) - 1, lower.tail = FALSE)
   }
 
-
   list(survival = survival, pval = pval)
 }
-
 
 #' Get survival analysis results
 #' @get /
