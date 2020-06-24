@@ -76,8 +76,9 @@ function(factor = "") {
 1. Download and install Python(>=3.6) and pip
 2. `cd` to `/py`
 3. Run `pip install -r requirements.txt` to install dependencies
-4. Run `flask run`
-5. Service is now running on port 5000
+4. run `export FLASK_APP=app.py`
+5. Run `flask run`
+6. Service is now running on port 5000
 
 ### Dependendcies:
 
