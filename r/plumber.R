@@ -16,31 +16,59 @@ fetch_fake_data <- function() {
   data[data$time >= 0, c("time", "status", "sex", "race")]
 }
 
+get_strata_vector <- function(strata) {
+  unlist(lapply(seq_along(strata), function(i) {
+    rep(names(strata)[i], strata[i])
+  }))  
+}
+
+df2list <- function(df) {
+  lapply(seq_len(nrow(df)), function(i) as.list(lapply(df, "[", i)))
+}
+
+get_risktable <- function(x, yearmax) {
+  fill_na <- function(x) {
+    c(0, x[!is.na(x)])[cumsum(!is.na(x)) + 1]
+  }
+
+  vec <- c(x$nrisk[1], sapply(split(x$nrisk, ceiling(x$time)), min))
+  df <- merge(
+    data.frame(year = fill_na(as.numeric(names(vec))), n = vec),
+    data.frame(year = 0:yearmax),
+    all = TRUE
+  )
+  df$n <- fill_na(df$n)
+  df2list(df)
+}
+
 get_survival_data <- function(data, factor) {
   trt <- if (factor == "") 1 else factor
   formula <- as.formula(paste0("Surv(time, status) ~ ", trt))
   fit <- survfit(formula, data = data)
 
-  survival <- vector("list", length(fit$surv))
-  for (i in seq_len(length(fit$surv))) {
-    survival[[i]] <- list(prob = fit$surv[i], time = fit$time[i])
-  }
+  survdf = data.frame(
+    prob = fit$surv,
+    time = fit$time,
+    nrisk = fit$n.risk
+  )
 
-  pval <- NA
-
-  if (factor != "") {
-    survival_by_strata <- list()
-    for (i in seq_len(length(fit$strata))) {
-      n <- if (i == 1) 1 else cumsum(fit$strata)[i - 1]
-      survival_by_strata[[names(fit$strata)[i]]] <- survival[n:cumsum(fit$strata)[i]]
-    }
-    survival <- survival_by_strata
+  if (factor == "") {
+    survival <- df2list(survdf)
+    pval <- NA
+    risktable <- get_risktable(survdf, max(survdf$time))
+  } else {
+    survdf$strata <- get_strata_vector(fit$strata)
+    survival <- lapply(split(survdf, survdf$strata), df2list)
     
     sdiff <- survdiff(eval(fit$call$formula), data = data)
     pval <- stats::pchisq(sdiff$chisq, length(sdiff$n) - 1, lower.tail = FALSE)
-  }
 
-  list(survival = survival, pval = pval)
+    risktable <- lapply(split(survdf, survdf$strata), function(x) {
+      get_risktable(x, max(survdf$time))
+    })
+  }
+  
+  list(survival = survival, pval = pval, risktable = risktable)
 }
 
 #' Get survival analysis results
