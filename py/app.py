@@ -23,6 +23,9 @@ def fetch_fake_data():
             .drop(columns=['scens', 'stime'])
     )
 
+def parse_factor(s):
+    return [x.strip() for x in s.split(' ')] if s else []
+
 def get_survival_data(data, factor):
     def parse_survival(df):
         return (
@@ -59,8 +62,5 @@ def get_survival_data(data, factor):
 @app.route('/')
 def get_survival():
     data = fetch_fake_data() if MOCK else fetch_data(url)
-    
-    factor_str = request.args.get('factor')
-    factor = [x.strip() for x in factor_str.split(' ')] if factor_str else []
-    
+    factor = parse_factor(request.args.get('factor'))
     return jsonify(get_survival_data(data, factor))
