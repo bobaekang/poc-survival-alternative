@@ -63,5 +63,4 @@ def get_survival():
     factor_str = request.args.get('factor')
     factor = [x.strip() for x in factor_str.split(' ')] if factor_str else []
     
-    survival_data = get_survival_data(data, factor)
-    return jsonify(survival_data)
+    return jsonify(get_survival_data(data, factor))
