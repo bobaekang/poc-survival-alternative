@@ -24,7 +24,7 @@ We then create a server that:
 4. Run `Rscript app.R`
 5. Service is now running on port 8080
 
-### Dependendcies:
+### Dependendcies
 
 - `jsonlite` for fetching JSON data
 - `plumber` for creating simple API server application
@@ -80,7 +80,7 @@ function(factor = "") {
 5. Run `flask run`
 6. Service is now running on port 5000
 
-### Dependendcies:
+### Dependendcies
 
 - `flask` for creating simple API server application
 - `lifelines` for survival analysis
@@ -104,7 +104,7 @@ def fetch_data(url):
     # ...
     return df
 
-def get_survival_data(df):
+def get_survival_data(df, factor):
     """Return Kaplan-Meier estimates and p-value from log-rank test."""
     # ...
     return {
