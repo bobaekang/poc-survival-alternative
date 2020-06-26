@@ -53,7 +53,7 @@ get_survival_data <- function(data, factor) {
   )
 
   if (factor == "") {
-    survival <- df2list(survdf["prob", "time"])
+    survival <- df2list(survdf[c("prob", "time")])
     pval <- NA
     risktable <- get_risktable(survdf, max(survdf$time))
   } else {
