@@ -114,9 +114,9 @@ def get_survival_data(df, factor):
       "survival": survival
     }
 
-@app.route('/')
+@app.route("/")
 def get_survival():
     df = fetch_data(DATA_URL)
-    factor = request.args.get('factor')
+    factor = request.args.get("factor")
     return jsonify(get_survival_data(data, factor))
 ```

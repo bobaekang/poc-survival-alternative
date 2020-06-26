@@ -38,7 +38,7 @@ get_risktable <- function(x, yearmax) {
     all = TRUE
   )
   df$n <- fill_na(df$n)
-  df2list(df[c('n', 'year')])
+  df2list(df[c("n", "year")])
 }
 
 get_survival_data <- function(data, factor) {
@@ -53,13 +53,13 @@ get_survival_data <- function(data, factor) {
   )
 
   if (factor == "") {
-    survival <- df2list(survdf['prob', 'time'])
+    survival <- df2list(survdf["prob", "time"])
     pval <- NA
     risktable <- get_risktable(survdf, max(survdf$time))
   } else {
     survdf$strata <- get_strata_vector(fit$strata)
     survival <- lapply(split(survdf, survdf$strata), function(x) {
-      df2list(x[c('prob', 'time')])
+      df2list(x[c("prob", "time")])
     })
     
     sdiff <- survdiff(eval(fit$call$formula), data = data)

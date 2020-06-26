@@ -16,16 +16,16 @@ def fetch_fake_data():
     return (
         pd.read_json("../data.json", orient="records")
             .rename(columns=str.lower)
-            .query('stime >= 0')
+            .query("stime >= 0")
             .assign(
                 time = lambda x: x.stime / 365,
                 status = lambda x: x.scens == 1
             )
-            .drop(columns=['scens', 'stime'])
+            .drop(columns=["scens", "stime"])
     )
 
 def parse_factor(s):
-    return [x.strip() for x in s.split(' ')] if s else []
+    return [x.strip() for x in s.split(" ")] if s else []
 
 def parse_survival(df):
     return (
@@ -43,12 +43,12 @@ def get_risktable(df, yearmax):
     return (
       df.reset_index()
         .assign(year=lambda x: x.event_at.apply(np.ceil))
-        .groupby('year').at_risk.min()
+        .groupby("year").at_risk.min()
         .reset_index()
-        .merge(pd.DataFrame(data={'year': range(yearmax + 1)}), how="outer")
+        .merge(pd.DataFrame(data={"year": range(yearmax + 1)}), how="outer")
         .sort_values(by="year")
         .fillna(method="ffill")
-        .rename(columns={'at_risk': 'n'})
+        .rename(columns={"at_risk": "n"})
         .to_dict(orient="records")
     )
 
@@ -68,7 +68,7 @@ def get_survival_data(data, factor):
         survival = {}
         for name, grouped_df in data.groupby(factor):
             name = map(str, name if isinstance(name, tuple) else (name, ))
-            label = ', '.join(map(lambda x: '='.join(x), zip(factor, name)))
+            label = ", ".join(map(lambda x: "=".join(x), zip(factor, name)))
             
             kmf.fit(grouped_df.time, grouped_df.status)
             risktable[label] = get_risktable(kmf.event_table.at_risk, yearmax)
@@ -80,8 +80,8 @@ def get_survival_data(data, factor):
         "survival": survival
     }
 
-@app.route('/')
+@app.route("/")
 def get_survival():
     data = fetch_fake_data() if MOCK else fetch_data(url)
-    factor = parse_factor(request.args.get('factor'))
+    factor = parse_factor(request.args.get("factor"))
     return jsonify(get_survival_data(data, factor))
