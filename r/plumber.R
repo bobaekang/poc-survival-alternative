@@ -18,7 +18,7 @@ fetch_fake_data <- function() {
 
 get_strata_vector <- function(strata) {
   unlist(lapply(seq_along(strata), function(i) {
-    rep(names(strata)[i], strata[i])
+    rep(trimws(names(strata)[i]), strata[i])
   }))  
 }
 
