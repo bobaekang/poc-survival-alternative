@@ -19,7 +19,7 @@ We then create a server that:
 
 ### Project setup
 
-1. Download and install R
+1. Download and install R(^3.6)
 2. Run `Rscript -e 'install.packages(c("jsonlite", "plumber", "survival"))'` to install dependencies
 3. `cd` to `/r`
 4. Run `Rscript app.R`
@@ -74,7 +74,7 @@ function(factor = "") {
 
 ### Project setup
 
-1. Download and install Python(>=3.6) and pip
+1. Download and install Python(^3.6) and pip
 2. `cd` to `/py`
 3. Run `pip install -r requirements.txt` to install dependencies
 4. run `export FLASK_APP=app.py`
