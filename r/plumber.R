@@ -38,7 +38,7 @@ get_risktable <- function(x, yearmax) {
     all = TRUE
   )
   df$n <- fill_na(df$n)
-  df2list(df)
+  df2list(df[c('n', 'year')])
 }
 
 get_survival_data <- function(data, factor) {
@@ -47,18 +47,20 @@ get_survival_data <- function(data, factor) {
   fit <- survfit(formula, data = data)
 
   survdf = data.frame(
+    nrisk = fit$n.risk,
     prob = fit$surv,
-    time = fit$time,
-    nrisk = fit$n.risk
+    time = fit$time
   )
 
   if (factor == "") {
-    survival <- df2list(survdf)
+    survival <- df2list(survdf['prob', 'time'])
     pval <- NA
     risktable <- get_risktable(survdf, max(survdf$time))
   } else {
     survdf$strata <- get_strata_vector(fit$strata)
-    survival <- lapply(split(survdf, survdf$strata), df2list)
+    survival <- lapply(split(survdf, survdf$strata), function(x) {
+      df2list(x[c('prob', 'time')])
+    })
     
     sdiff <- survdiff(eval(fit$call$formula), data = data)
     pval <- stats::pchisq(sdiff$chisq, length(sdiff$n) - 1, lower.tail = FALSE)
@@ -68,7 +70,7 @@ get_survival_data <- function(data, factor) {
     })
   }
   
-  list(survival = survival, pval = pval, risktable = risktable)
+  list(pval = pval, risktable = risktable, survival = survival)
 }
 
 #' Get survival analysis results
