@@ -12,7 +12,8 @@ We then create a server that:
 2. Fetches data from the source API endpoint
 3. Fit Kaplan-Meier estimator to data based on query string `?factor=xxx`
 4. Calculate p-value for log-rank test
-5. Serve survival estimates and p-value in JSON as response
+5. Create a risk table containing number of subjects at risk per year
+6. Serve results in JSON as response
 
 ## Using R
 
@@ -54,10 +55,10 @@ fetch_data <- function(url) {
   df
 }
 
-# Return Kaplan-Meier estimates and p-value from log-rank test
+# Return survival analysis data to serve
 get_survival_data <- function(df, factor) {
   # ...
-  list(survival = survival, pval = pval)
+  list(pval = pval, risktable = risktable, survival = survival)
 }
 
 #' Get survival analysis results
@@ -105,11 +106,12 @@ def fetch_data(url):
     return df
 
 def get_survival_data(df, factor):
-    """Return Kaplan-Meier estimates and p-value from log-rank test."""
+    """Return survival analysis data to serve."""
     # ...
     return {
+      "pval": pval,
+      "risktable": risktable,
       "survival": survival
-      "pval": pval
     }
 
 @app.route('/')
