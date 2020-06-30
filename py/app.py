@@ -41,15 +41,15 @@ def get_pval(df, factor):
 
 def get_risktable(df, yearmax):
     return (
-      df.reset_index()
-        .assign(year=lambda x: x.event_at.apply(np.ceil))
-        .groupby("year").at_risk.min()
-        .reset_index()
-        .merge(pd.DataFrame(data={"year": range(yearmax + 1)}), how="outer")
-        .sort_values(by="year")
-        .fillna(method="ffill")
-        .rename(columns={"at_risk": "n"})
-        .to_dict(orient="records")
+        df.reset_index()
+            .assign(year=lambda x: x.event_at.apply(np.ceil))
+            .groupby("year").at_risk.min()
+            .reset_index()
+            .merge(pd.DataFrame(data={"year": range(yearmax + 1)}), how="outer")
+            .sort_values(by="year")
+            .fillna(method="ffill")
+            .rename(columns={"at_risk": "n"})
+            .to_dict(orient="records")
     )
 
 def get_survival_data(data, factor):
