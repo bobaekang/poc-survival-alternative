@@ -2,7 +2,6 @@ library(jsonlite)
 library(survival)
 
 DATA_URL <- "https://" # JSON data endpoint
-MOCK <- TRUE
 
 fetch_data <- function(url) {
   content(fromJSON(url), as = "parsed")
@@ -77,6 +76,6 @@ get_survival_data <- function(data, factor) {
 #' @get /
 #' @serializer unboxedJSON
 function(factor = "") {
-  data <- if (MOCK) fetch_fake_data() else fetch_data(DATA_URL)
+  data <- if (DATA_URL == "") fetch_fake_data() else fetch_data(DATA_URL)
   get_survival_data(data, factor)
 }

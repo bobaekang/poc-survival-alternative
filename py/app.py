@@ -4,8 +4,7 @@ from lifelines.statistics import multivariate_logrank_test
 import numpy as np
 import pandas as pd
 
-DATA_URL = "https://" # source data API endpoint
-MOCK = True
+DATA_URL = "" # source data API endpoint
 
 app = Flask(__name__) # default port 5000
 
@@ -82,6 +81,6 @@ def get_survival_data(data, factor):
 
 @app.route("/")
 def get_survival():
-    data = fetch_fake_data() if MOCK else fetch_data(DATA_URL)
+    data = fetch_fake_data() if DATA_URL == "" else fetch_data(DATA_URL)
     factor = parse_factor(request.args.get("factor"))
     return jsonify(get_survival_data(data, factor))
