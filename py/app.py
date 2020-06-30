@@ -82,6 +82,6 @@ def get_survival_data(data, factor):
 
 @app.route("/")
 def get_survival():
-    data = fetch_fake_data() if MOCK else fetch_data(url)
+    data = fetch_fake_data() if MOCK else fetch_data(DATA_URL)
     factor = parse_factor(request.args.get("factor"))
     return jsonify(get_survival_data(data, factor))
