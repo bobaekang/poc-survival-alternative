@@ -1,3 +1,5 @@
+_Note: The current branch (`preserve-proposal`) is created for reference purposes only and contains the original proposal/proof-of-concept for implementing Survival Analysis Microservice app in Python and R._
+
 # Proof of concept for survival analysis alternative setups
 
 Demonstrating alternative setups for serving survival function estimates of INRG data, in R and Python. For proof-of-concept purposes only.
