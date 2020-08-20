@@ -23,10 +23,6 @@ def fetch_fake_data():
     )
 
 
-def parse_factor(s):
-    return [x.strip() for x in s.split(" ")] if s else []
-
-
 def parse_survival(df):
     return (
         df.reset_index()
@@ -60,7 +56,8 @@ def get_survival_result(data, request_form):
     kmf = KaplanMeierFitter()
     yearmax = int(np.floor(data.time.max()))
 
-    factor = parse_factor(request_form["factor"])
+    factor = [x for x in [request_form["factorVariable"],
+                          request_form["stratificationVariable"]] if x != ""]
 
     if len(factor) == 0:
         pval = None
