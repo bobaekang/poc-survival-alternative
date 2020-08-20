@@ -15,7 +15,11 @@ def fetch_data(url, request_body):
 
 
 def fetch_fake_data(request_body):
-    if request_body["efsFlag"]:
+    efs_flag = request_body["efsFlag"]
+    factor_var = request_body["factorVariable"]
+    stratification_var = request_body["stratificationVariable"]
+
+    if efs_flag:
         status_col, time_col = "EFSCENS", "EFSTIME"
     else:
         status_col, time_col = "SCENS", "STIME"
@@ -25,10 +29,7 @@ def fetch_fake_data(request_body):
         .query(f"{time_col} >= 0")
         .assign(status=lambda x: x[status_col] == 1,
                 time=lambda x: x[time_col] / 365)
-        .filter(items=[request_body["factorVariable"],
-                       request_body["stratificationVariable"],
-                       "status",
-                       "time"])
+        .filter(items=[factor_var, stratification_var, "status", "time"])
     )
 
 
