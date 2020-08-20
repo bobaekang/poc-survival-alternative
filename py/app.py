@@ -31,8 +31,8 @@ def parse_survival(df):
     )
 
 
-def get_pval(df, factor):
-    groups = list(map(str, zip(*[df[f] for f in factor])))
+def get_pval(df, variables):
+    groups = list(map(str, zip(*[df[f] for f in variables])))
     result = multivariate_logrank_test(df.time, groups, df.status)
     return result.p_value
 
@@ -56,22 +56,22 @@ def get_survival_result(data, request_form):
     kmf = KaplanMeierFitter()
     yearmax = int(np.floor(data.time.max()))
 
-    factor = [x for x in [request_form["factorVariable"],
-                          request_form["stratificationVariable"]] if x != ""]
+    variables = [x for x in [request_form["factorVariable"],
+                             request_form["stratificationVariable"]] if x != ""]
 
-    if len(factor) == 0:
+    if len(variables) == 0:
         pval = None
 
         kmf.fit(data.time, data.status)
         risktable = get_risktable(kmf.event_table.at_risk, yearmax)
         survival = parse_survival(kmf.survival_function_)
     else:
-        pval = get_pval(data, factor)
+        pval = get_pval(data, variables)
         risktable = {}
         survival = {}
-        for name, grouped_df in data.groupby(factor):
+        for name, grouped_df in data.groupby(variables):
             name = map(str, name if isinstance(name, tuple) else (name,))
-            label = ", ".join(map(lambda x: "=".join(x), zip(factor, name)))
+            label = ", ".join(map(lambda x: "=".join(x), zip(variables, name)))
 
             kmf.fit(grouped_df.time, grouped_df.status)
             risktable[label] = get_risktable(kmf.event_table.at_risk, yearmax)
