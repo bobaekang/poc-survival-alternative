@@ -9,16 +9,23 @@ DATA_URL = ""  # source data API endpoint
 app = Flask(__name__)  # default port 5000
 
 
-def fetch_data(url):
-    return pd.read_json(url, orient="records")
+def fetch_data(url, efs_flag):
+    # TODO
+    return
 
 
-def fetch_fake_data():
+def fetch_fake_data(efs_flag):
+    if efs_flag:
+        status_col, time_col = "EFSCENS", "EFSTIME"
+    else:
+        status_col, time_col = "SCENS", "STIME"
+
     return (
         pd.read_json("../data.json", orient="records")
-        .query("STIME >= 0")
-        .assign(time=lambda x: x.STIME / 365, status=lambda x: x.SCENS == 1)
-        .drop(columns=["SCENS", "STIME"])
+        .query(f"{time_col} >= 0")
+        .assign(status=lambda x: x[status_col] == 1,
+                time=lambda x: x[time_col] / 365)
+        .drop(columns=[status_col, time_col])
     )
 
 
@@ -78,9 +85,13 @@ def get_survival_result(data, variables):
 
 @app.route("/", methods=["POST"])
 def root():
-    data = fetch_fake_data() if DATA_URL == "" else fetch_data(DATA_URL)
-
     request_data = request.get_json()
+
+    data = (
+        fetch_fake_data(request_data["efsFlag"])
+        if DATA_URL == ""
+        else fetch_data(DATA_URL, request_data["efsFlag"])
+    )
     variables = [x for x in [request_data["factorVariable"],
                              request_data["stratificationVariable"]] if x != ""]
 
