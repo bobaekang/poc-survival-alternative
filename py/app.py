@@ -71,9 +71,11 @@ def get_risktable(df, yearmax):
     )
 
 
-def get_survival_result(data, variables):
+def get_survival_result(data, request_body):
     kmf = KaplanMeierFitter()
     yearmax = int(np.floor(data.time.max()))
+    variables = [x for x in [request_body["factorVariable"],
+                             request_body["stratificationVariable"]] if x != ""]
 
     if len(variables) == 0:
         pval = None
@@ -105,7 +107,5 @@ def root():
         if DATA_URL == ""
         else fetch_data(DATA_URL, request_body)
     )
-    variables = [x for x in [request_body["factorVariable"],
-                             request_body["stratificationVariable"]] if x != ""]
 
-    return jsonify(get_survival_result(data, variables))
+    return jsonify(get_survival_result(data, request_body))
