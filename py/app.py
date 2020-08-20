@@ -85,14 +85,14 @@ def get_survival_result(data, variables):
 
 @app.route("/", methods=["POST"])
 def root():
-    request_data = request.get_json()
+    request_body = request.get_json()
 
     data = (
-        fetch_fake_data(request_data["efsFlag"])
+        fetch_fake_data(request_body["efsFlag"])
         if DATA_URL == ""
-        else fetch_data(DATA_URL, request_data["efsFlag"])
+        else fetch_data(DATA_URL, request_body["efsFlag"])
     )
-    variables = [x for x in [request_data["factorVariable"],
-                             request_data["stratificationVariable"]] if x != ""]
+    variables = [x for x in [request_body["factorVariable"],
+                             request_body["stratificationVariable"]] if x != ""]
 
     return jsonify(get_survival_result(data, variables))
