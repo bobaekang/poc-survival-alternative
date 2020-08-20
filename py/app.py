@@ -51,9 +51,11 @@ def get_risktable(df, yearmax):
             .to_dict(orient="records")
     )
 
-def get_survival_result(data, factor):
+def get_survival_result(data, request_form):
     kmf = KaplanMeierFitter()
     yearmax = int(np.floor(data.time.max()))
+    
+    factor = parse_factor(request_form["factor"])
     
     if len(factor) == 0:
         pval = None
@@ -82,5 +84,4 @@ def get_survival_result(data, factor):
 @app.route("/", methods=['POST'])
 def root():
     data = fetch_fake_data() if DATA_URL == "" else fetch_data(DATA_URL)
-    factor = parse_factor(request.form["factor"])
-    return jsonify(get_survival_result(data, factor))
+    return jsonify(get_survival_result(data, request.form))
