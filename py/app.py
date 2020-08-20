@@ -56,32 +56,44 @@ def get_pval(df, variables):
     return result.p_value
 
 
-def get_risktable(df, yearmax):
+def get_risktable(df, year_range):
     return (
         df.reset_index()
         .assign(year=lambda x: x.event_at.apply(np.ceil))
         .groupby("year")
         .at_risk.min()
         .reset_index()
-        .merge(pd.DataFrame(data={"year": range(yearmax + 1)}), how="outer")
+        .merge(pd.DataFrame(data={"year": year_range}), how="outer")
         .sort_values(by="year")
         .fillna(method="ffill")
         .rename(columns={"at_risk": "n"})
+        .query(f"year >= {min(year_range)} and year <= {max(year_range)}")
         .to_dict(orient="records")
     )
 
 
+def get_year_range(data, request_body):
+    year_start = request_body["startTime"]
+    year_end = (
+        request_body["endTime"]
+        if request_body["endTime"] > 0
+        else int(np.floor(data.time.max()))
+    )
+
+    return range(year_start, year_end + 1)
+
+
 def get_survival_result(data, request_body):
     kmf = KaplanMeierFitter()
-    yearmax = int(np.floor(data.time.max()))
     variables = [x for x in [request_body["factorVariable"],
                              request_body["stratificationVariable"]] if x != ""]
+    year_range = get_year_range(data, request_body)
 
     if len(variables) == 0:
         pval = None
 
         kmf.fit(data.time, data.status)
-        risktable = get_risktable(kmf.event_table.at_risk, yearmax)
+        risktable = get_risktable(kmf.event_table.at_risk, year_range)
         survival = parse_survival(kmf.survival_function_)
     else:
         pval = get_pval(data, variables)
@@ -92,7 +104,8 @@ def get_survival_result(data, request_body):
             label = ", ".join(map(lambda x: "=".join(x), zip(variables, name)))
 
             kmf.fit(grouped_df.time, grouped_df.status)
-            risktable[label] = get_risktable(kmf.event_table.at_risk, yearmax)
+            risktable[label] = get_risktable(kmf.event_table.at_risk,
+                                             year_range)
             survival[label] = parse_survival(kmf.survival_function_)
 
     return {"pval": pval, "risktable": risktable, "survival": survival}
