@@ -16,10 +16,9 @@ def fetch_data(url):
 def fetch_fake_data():
     return (
         pd.read_json("../data.json", orient="records")
-        .rename(columns=str.lower)
-        .query("stime >= 0")
-        .assign(time=lambda x: x.stime / 365, status=lambda x: x.scens == 1)
-        .drop(columns=["scens", "stime"])
+        .query("STIME >= 0")
+        .assign(time=lambda x: x.STIME / 365, status=lambda x: x.SCENS == 1)
+        .drop(columns=["SCENS", "STIME"])
     )
 
 
