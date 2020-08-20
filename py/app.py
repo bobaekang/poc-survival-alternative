@@ -79,8 +79,8 @@ def get_survival_data(data, factor):
         "survival": survival
     }
 
-@app.route("/")
+@app.route("/", methods=['POST'])
 def get_survival():
     data = fetch_fake_data() if DATA_URL == "" else fetch_data(DATA_URL)
-    factor = parse_factor(request.args.get("factor"))
+    factor = parse_factor(request.form["factor"])
     return jsonify(get_survival_data(data, factor))
