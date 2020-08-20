@@ -21,15 +21,16 @@ def fetch_fake_data(request_body):
     start_time = request_body["startTime"]
     end_time = request_body["endTime"]
 
-    if efs_flag:
-        status_col, time_col = "EFSCENS", "EFSTIME"
-    else:
-        status_col, time_col = "SCENS", "STIME"
-
-    if end_time > 0:
-        time_range_query = f"time >= {start_time} and time <= {end_time}"
-    else:
-        time_range_query = f"time >= {start_time}"
+    status_col, time_col = (
+        ("EFSCENS", "EFSTIME")
+        if efs_flag
+        else ("SCENS", "STIME")
+    )
+    time_range_query = (
+        f"time >= {start_time} and time <= {end_time}"
+        if end_time > 0
+        else f"time >= {start_time}"
+    )
 
     return (
         pd.read_json("../data.json", orient="records")
