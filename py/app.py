@@ -9,13 +9,13 @@ DATA_URL = ""  # source data API endpoint
 app = Flask(__name__)  # default port 5000
 
 
-def fetch_data(url, efs_flag):
+def fetch_data(url, request_body):
     # TODO
     return
 
 
-def fetch_fake_data(efs_flag):
-    if efs_flag:
+def fetch_fake_data(request_body):
+    if request_body["efsFlag"]:
         status_col, time_col = "EFSCENS", "EFSTIME"
     else:
         status_col, time_col = "SCENS", "STIME"
@@ -88,9 +88,9 @@ def root():
     request_body = request.get_json()
 
     data = (
-        fetch_fake_data(request_body["efsFlag"])
+        fetch_fake_data(request_body)
         if DATA_URL == ""
-        else fetch_data(DATA_URL, request_body["efsFlag"])
+        else fetch_data(DATA_URL, request_body)
     )
     variables = [x for x in [request_body["factorVariable"],
                              request_body["stratificationVariable"]] if x != ""]
