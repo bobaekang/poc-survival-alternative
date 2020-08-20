@@ -6,7 +6,7 @@ A simple proof-of-concept Flask app to provide survival analysis result for INRG
 
 This proof-of-concept should:
 
-1. Listen to HTTP `POST` requests on `/survival-analysis`, with request body containing:
+1. Listen to HTTP `POST` requests on `/`, with request body containing:
    - `factorVariable` (string)
    - `stratificationVariable` (string)
    - `efsFlag` (boolean)
