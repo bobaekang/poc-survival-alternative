@@ -25,7 +25,10 @@ def fetch_fake_data(request_body):
         .query(f"{time_col} >= 0")
         .assign(status=lambda x: x[status_col] == 1,
                 time=lambda x: x[time_col] / 365)
-        .drop(columns=[status_col, time_col])
+        .filter(items=[request_body["factorVariable"],
+                       request_body["stratificationVariable"],
+                       "status",
+                       "time"])
     )
 
 
