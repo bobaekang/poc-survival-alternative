@@ -18,11 +18,18 @@ def fetch_fake_data(request_body):
     efs_flag = request_body["efsFlag"]
     factor_var = request_body["factorVariable"]
     stratification_var = request_body["stratificationVariable"]
+    start_time = request_body["startTime"]
+    end_time = request_body["endTime"]
 
     if efs_flag:
         status_col, time_col = "EFSCENS", "EFSTIME"
     else:
         status_col, time_col = "SCENS", "STIME"
+
+    if end_time > 0:
+        time_range_query = f"time >= {start_time} and time <= {end_time}"
+    else:
+        time_range_query = f"time >= {start_time}"
 
     return (
         pd.read_json("../data.json", orient="records")
@@ -30,6 +37,7 @@ def fetch_fake_data(request_body):
         .assign(status=lambda x: x[status_col] == 1,
                 time=lambda x: x[time_col] / 365)
         .filter(items=[factor_var, stratification_var, "status", "time"])
+        .query(time_range_query)
     )
 
 
