@@ -33,7 +33,7 @@ def fetch_fake_data(request_body):
     )
 
     return (
-        pd.read_json("../data.json", orient="records")
+        pd.read_json("./data.json", orient="records")
         .query(f"{time_col} >= 0")
         .assign(status=lambda x: x[status_col] == 1,
                 time=lambda x: x[time_col] / 365.25)
