@@ -36,7 +36,7 @@ def fetch_fake_data(request_body):
         pd.read_json("../data.json", orient="records")
         .query(f"{time_col} >= 0")
         .assign(status=lambda x: x[status_col] == 1,
-                time=lambda x: x[time_col] / 365)
+                time=lambda x: x[time_col] / 365.25)
         .filter(items=[factor_var, stratification_var, "status", "time"])
         .query(time_range_query)
     )
