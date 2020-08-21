@@ -21,11 +21,10 @@ This proof-of-concept should:
 ## Project setup
 
 1. Download and install Python(^3.6) and pip
-2. `cd` to `/py`
-3. Run `pip install -r requirements.txt` to install dependencies
-4. run `export FLASK_APP=app.py`
-5. Run `flask run`
-6. Service is now running on port 5000
+2. Run `pip install -r requirements.txt` to install dependencies
+3. run `export FLASK_APP=app.py`
+4. Run `flask run`
+5. Service is now running on port 5000
 
 ## Dependendcies
 
@@ -46,12 +45,12 @@ DATA_URL = "" # source data API endpoint; use fake data if empty string
 
 app = Flask(__name__) # default port 5000
 
-def fetch_data(url):
+def fetch_data(url, request_body):
     """Return a data frame of fetched data from an API endpoint """
     # ...
     return df
 
-def get_survival_result(df):
+def get_survival_result(df, request_body):
     """Return survival analysis result to serve."""
     # ...
     return {
@@ -61,7 +60,8 @@ def get_survival_result(df):
     }
 
 @app.route("/")
-def get_survival():
-    df = fetch_data(DATA_URL)
-    return jsonify(get_survival_result(df))
+def survival():
+    request_body = request.get_json()
+    data = fetch_data(DATA_URL, request_body)
+    return jsonify(get_survival_result(data, request_body))
 ```
