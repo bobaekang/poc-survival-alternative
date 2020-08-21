@@ -42,10 +42,11 @@ def fetch_fake_data(request_body):
     )
 
 
-def parse_survival(df):
+def parse_survival(df, year_range):
     return (
         df.reset_index()
         .rename(columns={"KM_estimate": "prob", "timeline": "time"})
+        .replace({'time': {0: min(year_range)}})
         .to_dict(orient="records")
     )
 
@@ -94,7 +95,7 @@ def get_survival_result(data, request_body):
 
         kmf.fit(data.time, data.status)
         risktable = get_risktable(kmf.event_table.at_risk, year_range)
-        survival = parse_survival(kmf.survival_function_)
+        survival = parse_survival(kmf.survival_function_, year_range)
     else:
         pval = get_pval(data, variables)
         risktable = {}
@@ -106,7 +107,8 @@ def get_survival_result(data, request_body):
             kmf.fit(grouped_df.time, grouped_df.status)
             risktable[label] = get_risktable(kmf.event_table.at_risk,
                                              year_range)
-            survival[label] = parse_survival(kmf.survival_function_)
+            survival[label] = parse_survival(kmf.survival_function_,
+                                             year_range)
 
     return {"pval": pval, "risktable": risktable, "survival": survival}
 
