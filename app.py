@@ -57,19 +57,19 @@ def get_pval(df, variables):
     return result.p_value
 
 
-def get_risktable(df, year_range):
+def get_risktable(df, time_range):
     return (
         df.reset_index()
-        .assign(year=lambda x: x.event_at.apply(np.ceil))
-        .groupby("year")
+        .assign(time=lambda x: x.event_at.apply(np.ceil))
+        .groupby("time")
         .at_risk.min()
         .reset_index()
-        .merge(pd.DataFrame(data={"year": year_range}), how="outer")
-        .sort_values(by="year")
+        .merge(pd.DataFrame(data={"time": time_range}), how="outer")
+        .sort_values(by="time")
         .fillna(method="ffill")
         .rename(columns={"at_risk": "nrisk"})
         .astype({"nrisk": "int32"})
-        .query(f"year >= {min(year_range)} and year <= {max(year_range)}")
+        .query(f"time >= {min(time_range)} and time <= {max(time_range)}")
         .to_dict(orient="records")
     )
 
