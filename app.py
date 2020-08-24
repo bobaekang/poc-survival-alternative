@@ -78,7 +78,7 @@ def get_time_range(data, request_body):
     start_time = request_body["startTime"]
     end_time = (
         request_body["endTime"]
-        if request_body["endTime"] > 0
+        if request_body["endTime"] > start_time
         else int(np.floor(data.time.max()))
     )
 
