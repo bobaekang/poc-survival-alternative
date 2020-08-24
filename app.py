@@ -108,7 +108,7 @@ def get_survival_result(data, request_body):
         survival = []
         for name, grouped_df in data.groupby(variables):
             name = map(str, name if isinstance(name, tuple) else (name,))
-            label = ", ".join(map(lambda x: "=".join(x), zip(variables, name)))
+            label = ",".join(map(lambda x: "=".join(x), zip(variables, name)))
 
             kmf.fit(grouped_df.time, grouped_df.status)
             risktable.append({
