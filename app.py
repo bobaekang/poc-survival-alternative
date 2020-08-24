@@ -94,21 +94,31 @@ def get_survival_result(data, request_body):
         pval = None
 
         kmf.fit(data.time, data.status)
-        risktable = get_risktable(kmf.event_table.at_risk, year_range)
-        survival = parse_survival(kmf.survival_function_, year_range)
+        risktable = [{
+            "name": "All",
+            "data": get_risktable(kmf.event_table.at_risk, year_range)
+        }]
+        survival = [{
+            "name": "All",
+            "data": parse_survival(kmf.survival_function_, year_range)
+        }]
     else:
         pval = get_pval(data, variables)
-        risktable = {}
-        survival = {}
+        risktable = []
+        survival = []
         for name, grouped_df in data.groupby(variables):
             name = map(str, name if isinstance(name, tuple) else (name,))
             label = ", ".join(map(lambda x: "=".join(x), zip(variables, name)))
 
             kmf.fit(grouped_df.time, grouped_df.status)
-            risktable[label] = get_risktable(kmf.event_table.at_risk,
-                                             year_range)
-            survival[label] = parse_survival(kmf.survival_function_,
-                                             year_range)
+            risktable.append({
+                "name": label,
+                "data": get_risktable(kmf.event_table.at_risk, year_range)
+            })
+            survival.append({
+                "name": label,
+                "data": parse_survival(kmf.survival_function_, year_range)
+            })
 
     return {"pval": pval, "risktable": risktable, "survival": survival}
 
