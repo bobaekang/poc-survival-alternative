@@ -68,6 +68,7 @@ def get_risktable(df, year_range):
         .sort_values(by="year")
         .fillna(method="ffill")
         .rename(columns={"at_risk": "nrisk"})
+        .astype({"nrisk": "int32"})
         .query(f"year >= {min(year_range)} and year <= {max(year_range)}")
         .to_dict(orient="records")
     )
