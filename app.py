@@ -75,11 +75,12 @@ def get_risktable(df, time_range):
 
 
 def get_time_range(data, request_body):
+    max_time = int(np.floor(data.time.max()))
     start_time = request_body["startTime"]
     end_time = (
-        request_body["endTime"]
+        min(request_body["endTime"], max_time)
         if request_body["endTime"] > start_time
-        else int(np.floor(data.time.max()))
+        else max_time
     )
 
     return range(start_time, end_time + 1)
