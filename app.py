@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, abort, request
+from flask import Flask, jsonify, abort, request, make_response
 from lifelines import KaplanMeierFitter
 from lifelines.statistics import multivariate_logrank_test
 import numpy as np
@@ -124,14 +124,22 @@ def get_survival_result(data, request_body):
     return {"pval": pval, "risktable": risktable, "survival": survival}
 
 
-@app.route("/", methods=["POST"])
+@app.route("/", methods=["OPTIONS", "POST"])
 def root():
-    request_body = request.get_json()
+    if request.method == "OPTIONS":
+        response = make_response()
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Headers", "*")
+        response.headers.add("Access-Control-Allow-Methods", "*")
+        return response
 
-    data = (
-        fetch_fake_data(request_body)
-        if DATA_URL == ""
-        else fetch_data(DATA_URL, request_body)
-    )
-
-    return jsonify(get_survival_result(data, request_body))
+    elif request.method == "POST":
+        request_body = request.get_json()
+        data = (
+            fetch_fake_data(request_body)
+            if DATA_URL == ""
+            else fetch_data(DATA_URL, request_body)
+        )
+        response = jsonify(get_survival_result(data, request_body))
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
