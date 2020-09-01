@@ -85,7 +85,7 @@ def get_risktable(at_risk, time_range):
     """Returns the number-at-risk table data (dict) for the response API
 
     Args:
-        at_risk(pandas.DataFrame): Number-at-risk data from a fitted lifelines.KaplanMeierFitter instance
+        at_risk(pandas.Series): Number-at-risk data from a fitted lifelines.KaplanMeierFitter instance
         time_range(range): A range of min and max time values
     """
     return (
