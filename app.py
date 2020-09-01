@@ -9,28 +9,28 @@ DATA_URL = ""  # source data API endpoint
 app = Flask(__name__)  # default port 5000
 
 
-def fetch_data(url, request_body):
+def fetch_data(url, args):
     """Fetches the source data (pandas.DataFrame) from url based on request body
 
     Args:
         url(str): A URL path to data source
-        request_body(dict): Request body parameters and values
+        args(dict): Request body parameters and values
     """
     # TODO
     return
 
 
-def fetch_fake_data(request_body):
+def fetch_fake_data(args):
     """Fetches the mocked source data (pandas.DataFrame) based on request body
 
     Args:
-        request_body(dict): Request body parameters and values
+        args(dict): Request body parameters and values
     """
-    efs_flag = request_body["efsFlag"]
-    factor_var = request_body["factorVariable"]
-    stratification_var = request_body["stratificationVariable"]
-    start_time = request_body["startTime"]
-    end_time = request_body["endTime"]
+    efs_flag = args["efsFlag"]
+    factor_var = args["factorVariable"]
+    stratification_var = args["stratificationVariable"]
+    start_time = args["startTime"]
+    end_time = args["endTime"]
 
     status_col, time_col = (
         ("EFSCENS", "EFSTIME")
@@ -105,30 +105,30 @@ def get_risktable(at_risk, time_range):
     )
 
 
-def get_time_range(data, request_body):
+def get_time_range(data, args):
     """Returns a (min, max) time range based on the data and request body
 
     Args:
         data(pandas.DataFrame): Source data
-        request_body(dict): Request body parameters and values
+        args(dict): Request body parameters and values
     """
     max_time = int(np.floor(data.time.max()))
-    start_time = request_body["startTime"]
+    start_time = args["startTime"]
     end_time = (
-        min(request_body["endTime"], max_time)
-        if request_body["endTime"] > start_time
+        min(args["endTime"], max_time)
+        if args["endTime"] > start_time
         else max_time
     )
 
     return range(start_time, end_time + 1)
 
 
-def get_survival_result(data, request_body):
+def get_survival_result(data, args):
     """Returns the survival results (dict) based on data and request body
 
     Args:
         data(pandas.DataFrame): Source data
-        request_body(dict): Request body parameters and values
+        args(dict): Request body parameters and values
 
     Returns:
         A dict of survival result consisting of "pval", "risktable", and "survival" data
@@ -139,9 +139,9 @@ def get_survival_result(data, request_body):
          "survival": [{"prob": 1.0, "time": 0.0}]}
     """
     kmf = KaplanMeierFitter()
-    variables = [x for x in [request_body["factorVariable"],
-                             request_body["stratificationVariable"]] if x != ""]
-    time_range = get_time_range(data, request_body)
+    variables = [x for x in [args["factorVariable"],
+                             args["stratificationVariable"]] if x != ""]
+    time_range = get_time_range(data, args)
 
     if len(variables) == 0:
         pval = None
@@ -186,12 +186,12 @@ def root():
         return response
 
     elif request.method == "POST":
-        request_body = request.get_json()
+        args = request.get_json()
         data = (
-            fetch_fake_data(request_body)
+            fetch_fake_data(args)
             if DATA_URL == ""
-            else fetch_data(DATA_URL, request_body)
+            else fetch_data(DATA_URL, args)
         )
-        response = jsonify(get_survival_result(data, request_body))
+        response = jsonify(get_survival_result(data, args))
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response
