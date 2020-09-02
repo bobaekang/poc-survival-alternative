@@ -26,11 +26,11 @@ def fetch_fake_data(args):
     Args:
         args(dict): Request body parameters and values
     """
-    efs_flag = args.get("efsFlag")
-    factor_var = args.get("factorVariable")
-    stratification_var = args.get("stratificationVariable")
-    start_time = args.get("startTime")
-    end_time = args.get("endTime")
+    efs_flag = args.get("efsFlag", False)
+    factor_var = args.get("factorVariable", "")
+    stratification_var = args.get("stratificationVariable", "")
+    start_time = args.get("startTime", 0)
+    end_time = args.get("endTime", 0)
 
     status_col, time_col = (
         ("EFSCENS", "EFSTIME")
@@ -113,10 +113,10 @@ def get_time_range(data, args):
         args(dict): Request body parameters and values
     """
     max_time = int(np.floor(data.time.max()))
-    start_time = args.get("startTime")
+    start_time = args.get("startTime", 0)
     end_time = (
-        min(args.get("endTime"), max_time)
-        if args.get("endTime") > start_time
+        min(args.get("endTime", 0), max_time)
+        if args.get("endTime", 0) > start_time
         else max_time
     )
 
@@ -139,8 +139,8 @@ def get_survival_result(data, args):
          "survival": [{"prob": 1.0, "time": 0.0}]}
     """
     kmf = KaplanMeierFitter()
-    variables = [x for x in [args.get("factorVariable"),
-                             args.get("stratificationVariable")] if x != ""]
+    variables = [x for x in [args.get("factorVariable", ""),
+                             args.get("stratificationVariable", "")] if x != ""]
     time_range = get_time_range(data, args)
 
     if len(variables) == 0:
